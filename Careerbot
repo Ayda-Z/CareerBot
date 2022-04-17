@@ -1,0 +1,221 @@
+package com.github.ayda;
+
+import org.javacord.api.DiscordApi;
+import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.Message;
+
+public class Main {
+    static String userinfo = null;
+    static String userCal = null;
+    static String userToDoList = null;
+
+    public static void main(String[] args) {
+        String token = "OTY0NTY2MjkyNDgyOTA0MTQ0.YlmgXA.Ks55V0Ut4tcq19JmLxetmWykzhQ";
+
+        DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
+
+        // Add a listener which answers with
+        api.addMessageCreateListener(event -> {
+            if (event.getMessageContent().equalsIgnoreCase("!CareerBot Welcome")) {
+                event.getChannel().sendMessage("Welcome to CareerBot!"
+                        +"\n\t>You can create a user profile using the !Name command."
+                        +"\n\t>You can use the !Career command to add a career from your profile."
+                        +"\n\t>You can use the !CareerList command to view list of currently supported careers."
+                        +"\n\t>You can use the !CareerAdvice command to get some advice for the career you've set."
+                        +"\n\t>You can use the !Cal command to schedule events to your calendar (use format mmddyy)"
+                        +"\n\t>You can use the ?busy command to check your calendar ( use format month/day/year)."
+                        +"\n\t>You can use the !setLength command to set the amount of weeks you want to study a course"
+                        +"\n\t>You can use the !setList command to set your to do list"
+                        +"\n\t>You can use the !getList command to get your to do list"
+                        +"\nEnjoy!");
+            }
+        });
+
+        api.addMessageCreateListener(event -> {
+            String name = null;
+            TextChannel channel = api.getTextChannelById("964609090204614686").get();
+            userinfo = ""+ channel.getMessageById("964724012003500103").join();
+            userinfo = userinfo.substring(userinfo.indexOf("Name"),userinfo.indexOf(")"));
+
+            if (event.getMessageContent().substring(0,5).equalsIgnoreCase("!Name")) {
+                name = event.getMessageContent().substring(6, event.getMessageContent().length());
+
+                event.getChannel().sendMessage("Your name is now set as " + name);
+
+                Message.edit(api, "964609090204614686", "964724012003500103", "Name: "+name+", "+userinfo.substring(userinfo.indexOf("Career"))).join();
+
+                userinfo = ""+ channel.getMessageById("964724012003500103").join();
+                userinfo = userinfo.substring(userinfo.indexOf("Name"),userinfo.indexOf(")"));
+
+            }
+        });
+
+        api.addMessageCreateListener(event -> {
+            if(event.getMessageContent().equalsIgnoreCase("!CareerList")) {
+                event.getChannel().sendMessage("List of currently supported careers:"
+                        +"\n\t>Doctor"
+                        +"\n\t>Dentist"
+                        +"\n\t>Architect"
+                        +"\n\t>etc..."
+                        +"\nDon't see the career you're looking for? Don't worry! Our list is always expanding!");
+            }
+        });
+
+        api.addMessageCreateListener(event -> {
+            String career = null;
+            TextChannel channel = api.getTextChannelById("964609090204614686").get();
+            userinfo = ""+ channel.getMessageById("964724012003500103").join();
+            userinfo = userinfo.substring(userinfo.indexOf("Name"),userinfo.indexOf(")"));
+
+            if(event.getMessageContent().substring(0,7).equalsIgnoreCase("!Career")) {
+                career = event.getMessageContent().substring(7, event.getMessageContent().length());
+
+                if(career.toUpperCase().indexOf("DOCTOR")!=-1 || career.toUpperCase().indexOf("DENTIST")!=-1 ||career.toUpperCase().indexOf("ARCHITECT")!=-1 ) {
+                    career= career.toUpperCase().substring(0,2)+career.toLowerCase().substring(2,career.length());
+
+                    event.getChannel().sendMessage(career + " has been added.");
+                    Message.edit(api, "964609090204614686", "964724012003500103", userinfo.substring(0, userinfo.indexOf("Careers")) + "Careers:" + career + ", " + userinfo.substring(userinfo.indexOf("Subject"))).join();
+                } else if(career.indexOf("Advice")==-1 && career.indexOf("Bot")==-1 && career.indexOf("List")==-1)
+                {
+                    event.getChannel().sendMessage(career+" doesn't seem to currently be in our list :(, use the !CareerList command to see some that are!");
+                }
+            }
+
+        });
+
+        api.addMessageCreateListener(event -> {
+            TextChannel channel = api.getTextChannelById("964609090204614686").get();
+            userinfo = "" + channel.getMessageById("964724012003500103").join();
+            userinfo = userinfo.substring(userinfo.indexOf("Name"), userinfo.indexOf(")"));
+
+            if(event.getMessageContent().equalsIgnoreCase("!CareerAdvice")) {
+                if(userinfo.substring(userinfo.indexOf("Careers:") + 9, userinfo.indexOf("Subject")-2).equalsIgnoreCase("Doctor")) {
+                    event.getChannel().sendMessage("In Order to become a doctor you will need to maintain a decent academic record. "
+                            + "This doesn't just mean having good grades but also things like having extracurriculars, "
+                            + "participating in contests and events related to science and medicine, and having the "
+                            + "learning skills needed to be a successful applicant, medical student, and doctor. "
+                            + "While it's true that prospective doctors need to maintain their academics it's also very important "
+                            + "to develop valuable practical skills and gain experience. Some examples of good ways to "
+                            + "get experience with medicine are by:"
+                            + "\n\t>Volunteering at your local hospitals or palliative care facilities"
+                            + "\n\t>Joining any medical related clubs or extracurriculars available"
+                    );
+                } else if(userinfo.substring(userinfo.indexOf("Careers:") + 9, userinfo.indexOf("Subject")-2).equalsIgnoreCase("Dentist")) {
+                    event.getChannel().sendMessage("In order to become a dentist you will need to prepare academically. "
+                            + "This not only includes excelling in the sciences, but also pursuing meaningful extracurricular "
+                            + "activities. Working in dentistry means interacting and delivering healthcare to patients on a daily "
+                            + "basis. In order to prepare for that, taking part in working with the public is a great opportunity to develop these skills."
+                            + " Although it's great to have extracurriculars that relate to dentistry, when working with the public, it is not necessary. "
+                            + "Some examples of good ways to get experience with medicine are by:"
+                            + "\n\t>Talk to and shadow a dentist"
+                            + "\n\t>Take part in extracurricular activities that give you experience in working with the public"
+                    );
+                } else if(userinfo.substring(userinfo.indexOf("Careers:") + 9, userinfo.indexOf("Subject")-2).equalsIgnoreCase("Architect")) {
+                    event.getChannel().sendMessage("In Order to become a Architect you will need to build up your practical skills "
+                            +"and your portfolio. It's important to have a body of work that represents you and "
+                            +"that can show schools and someday employers everything that YOU have to offer. "
+                            +"You should also spend some time learning by observing the masters, observe building "
+                            +"broaden your horizons using valuable resources like the internet and your local libraries "
+                            +"Aside from your skills as an architect, you need to work to develop various practical skills"
+                            +"like communication skills, that will help you thrive in the workplace. Some examples of good "
+                            +"ways to gain this sort of experience by:"
+                            +"\n\t>Try to find a mentor! Internships are a great way to gain industry experience"
+                            +"\n\t>Joining any architectural clubs or extracurriculars available"
+                    );
+                } else {
+                    event.getChannel().sendMessage("It seems you haven't yet set a supported career! "
+                            +"You can use the !CareerList command to view supported careers and the !Career command to set your choice.");
+
+                }
+            }
+
+    });
+
+    api.addMessageCreateListener(event -> {
+        TextChannel channel = api.getTextChannelById("964609090204614686").get();
+        userinfo = ""+ channel.getMessageById("964724012003500103").join();
+        userinfo = userinfo.substring(userinfo.indexOf("Name"),userinfo.indexOf(")"));
+
+        int l=0;
+        String subject = null;
+        if (event.getMessageContent().substring(0, 10).equalsIgnoreCase("!setLength")) {
+            l = Integer.parseInt(event.getMessageContent().substring(11, event.getMessageContent().length()));
+            event.getChannel().sendMessage("Your study schedule is set to " + l + " weeks!");
+            event.getChannel().sendMessage("Use the command !addSubject");
+            Message.edit(api, "964609090204614686", "964724012003500103", userinfo.substring(0,userinfo.indexOf("Subject"))+"Subject Study Length: "+l+" weeks").join();
+
+        }
+        if (event.getMessageContent().substring(0, 11).equalsIgnoreCase("!addSubject")) {
+            subject = event.getMessageContent().substring(12);
+            String length = userinfo.substring(userinfo.indexOf("Length:")+8, userinfo.indexOf("weeks")-1);
+            event.getChannel().sendMessage("You'll be studying "+subject+" for "+length+"weeks!");
+
+            Message.edit(api, "964609090204614686", "964724012003500103", userinfo.substring(0,userinfo.indexOf("Subject"))+"Subject "+subject+" Study Length: "+length+"weeks").join();
+
+        }
+
+    });
+
+        //to-do list
+        api.addMessageCreateListener(event -> {
+
+            TextChannel channel = api.getTextChannelById("964609090204614686").get();
+            userToDoList = ""+ channel.getMessageById("965264532417175552").join();
+            userToDoList = userToDoList.substring(userToDoList.indexOf("Item"),userToDoList.indexOf(")"));
+
+            String list = null;
+            if(event.getMessageContent().substring(0, 8).equalsIgnoreCase("!setList")) {
+                list = event.getMessageContent().substring(9);
+                event.getChannel().sendMessage("This is your to-do list: " + list);
+                Message.edit(api, "964609090204614686", "965264532417175552", "Items: "+list);
+            }
+            if(event.getMessageContent().substring(0,8).equalsIgnoreCase("!getList")){
+                event.getChannel().sendMessage("This is your to-do list: " + userToDoList.substring(userToDoList.indexOf("Items:")+7));
+            }
+        });
+
+        //calendar
+        String[] calendar = new String[365];
+        api.addMessageCreateListener(event -> {
+
+            String year = null;
+            String month = null;
+            String date = null;
+            String events = null;
+            if(event.getMessageContent().substring(0, 4).equalsIgnoreCase("!Cal")){
+                month = event.getMessageContent().substring(5,7);
+                date = event.getMessageContent().substring(7,9);
+                year = event.getMessageContent().substring(9,11);
+                events = event.getMessageContent().substring(12);
+
+                event.getChannel().sendMessage("On "+ month + "/" + date + "/" + "20" + year + " you have this planned: "+ events);
+
+                TextChannel channel = api.getTextChannelById("964609090204614686").get();
+                userCal = ""+ channel.getMessageById("965114382507987024").join();
+                userCal = userCal.substring(userCal.indexOf("Date"),userCal.indexOf(")"));
+
+                Message.edit(api, "964609090204614686", "965114382507987024", userCal+"\nDate: "+month+"/"+date+"/20"+year+" Event: "+events+" Done").join();
+
+            }
+        });
+
+        api.addMessageCreateListener(event -> {
+            if(event.getMessageContent().substring(0, 5).equalsIgnoreCase("?busy")) {
+                String dateRequested = event.getMessageContent().substring(5);
+                TextChannel channel = api.getTextChannelById("964609090204614686").get();
+                userCal = ""+ channel.getMessageById("965114382507987024").join();
+                userCal = userCal.substring(userCal.indexOf("Date"),userCal.indexOf(")"));
+
+                if(userCal.indexOf(dateRequested)!=-1){
+                    event.getChannel().sendMessage("You have the following events planned:"+userCal.substring(userCal.indexOf(dateRequested)+dateRequested.length()+7, userCal.indexOf("Done", userCal.indexOf(dateRequested))));
+
+                } else {
+                    event.getChannel().sendMessage("You don't have anything planned yet!");
+                }
+            }
+        });
+
+
+    }
+}
