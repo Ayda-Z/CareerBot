@@ -11,7 +11,7 @@ public class Main {
     static String userToDoList = null;
 
     public static void main(String[] args) {
-        String token = "OTY0NTY2MjkyNDgyOTA0MTQ0.YlmgXA.Ks55V0Ut4tcq19JmLxetmWykzhQ";
+        String token = "OTY0NTY2MjkyNDgyOTA0MTQ0.YlmgXA.zb0RC7Xk3Q_zjl6-4kQKb6k9aKw";
 
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
 
