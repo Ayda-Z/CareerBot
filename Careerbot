@@ -12,6 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         String token = "OTY0NTY2MjkyNDgyOTA0MTQ0.YlmgXA.zb0RC7Xk3Q_zjl6-4kQKb6k9aKw";
+        //token not functional due to discord automatic privacy checks
 
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
 
